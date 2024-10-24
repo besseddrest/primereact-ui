@@ -1,8 +1,13 @@
 import { DataTable } from 'primereact/datatable'
 import { Checkbox } from 'primereact/checkbox'
 import { Column } from 'primereact/column'
+import { IconField } from 'primereact/iconfield'
+import { InputIcon } from 'primereact/inputicon'
 import { PROJECTS } from './data/mock'
 import { useEffect, useState } from 'react'
+import { FilterMatchMode } from 'primereact/api'
+import { MultiSelect } from 'primereact/multiselect'
+import { InputText } from 'primereact/inputtext'
 
 const COLUMNS = [
     { field: 'isChecked', title: '', filter: '' },
@@ -19,11 +24,54 @@ export default function Table() {
     const [products, setProducts] = useState([])
     const [keywordFilters, setKeywordFilters] = useState({
         // TODO: set default value and filter rules
+        global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+        name: { value: null, matchMode: FilterMatchMode.CONTAINS },
+        product: { value: null, matchMode: FilterMatchMode.EQUALS },
+        created: { value: null, matchMode: FilterMatchMode.CONTAINS },
+        modified: { value: null, matchMode: FilterMatchMode.CONTAINS },
+        owner: { value: null, matchMode: FilterMatchMode.EQUALS },
     })
 
     useEffect(() => {
         setFilterLists(PROJECTS)
     }, [])
+
+    const ownersRowFilterTemplate = (options) => {
+        return (
+            <MultiSelect
+                value={options.values}
+                options={owners}
+                optionLabel="owner"
+                placeholder="All"
+                maxSelectedLabels={1}
+                onChange={(e) => console.log('changed')}
+                itemTemplate={ownersItemTemplate}
+            />
+        )
+    }
+
+    const ownersItemTemplate = (option) => {
+        return <div>{option}</div>
+    }
+
+    const productsRowFilterTemplate = (options) => {
+        return (
+            <MultiSelect
+                value={options.values}
+                options={products}
+                optionLabel="product"
+                placeholder="All Products"
+                maxSelectedLabels={1}
+                onChange={(e) => console.log('changed')}
+                itemTemplate={productsItemTemplate}
+            />
+        )
+    }
+
+    const productsItemTemplate = (option) => {
+        // TODO: multiselect for products filter list
+        return <div>{option}</div>
+    }
 
     return (
         <DataTable
@@ -35,10 +83,12 @@ export default function Table() {
             showGridlines
             rowHover={true}
             globalFilterFields={['product', 'owner']}
-            filters={['contains']}
+            filters={keywordFilters}
             filterDisplay="row"
             id="foo"
             tableStyle={{ minWidth: '50rem' }}
+            header={globalTableSearch}
+            onFilter={(ev) => console.log('global filter')}
         >
             <Column field="isSelected" body={checkboxTemplate}></Column>
             <Column field="name" header="Name" sortable filter></Column>
@@ -49,6 +99,7 @@ export default function Table() {
                 filter
                 filterField="product"
                 showFilterMenu={false}
+                filterElement={productsRowFilterTemplate}
             ></Column>
             <Column
                 field="created"
@@ -69,11 +120,26 @@ export default function Table() {
                 filterField="owner"
                 filter
                 showFilterMenu={true}
+                filterElement={ownersRowFilterTemplate}
             ></Column>
             <Column field="actions" body={actionsTemplate}></Column>
         </DataTable>
     )
 
+    function globalTableSearch() {
+        return (
+            <div>
+                <IconField>
+                    <InputIcon className="pi pi-search" />
+                    <InputText
+                        value=""
+                        onChange={() => {}}
+                        placeholder="Keyword Search"
+                    />
+                </IconField>
+            </div>
+        )
+    }
     function setFilterLists(data) {
         const owners = []
         const products = []
@@ -90,14 +156,6 @@ export default function Table() {
         setOwners(owners)
         setProducts(products)
     }
-}
-
-const productsTemplate = () => {
-    // TODO: multiselect for products filter list
-}
-
-const ownersTemplate = () => {
-    // TODO: multiselect for owners filter list
 }
 
 const checkboxTemplate = () => {
