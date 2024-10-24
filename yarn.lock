@@ -2671,6 +2671,11 @@ pretty-format@^29.7.0:
     ansi-styles "^5.0.0"
     react-is "^18.0.0"
 
+primeflex@^3.3.1:
+  version "3.3.1"
+  resolved "https://registry.npmjs.intuit.com:443/artifactory/api/npm/npm-intuit/primeflex/-/primeflex-3.3.1.tgz#361dddf6eb5db50d733e4cddd4b6e376a3d7bd68"
+  integrity sha512-zaOq3YvcOYytbAmKv3zYc+0VNS9Wg5d37dfxZnveKBFPr7vEIwfV5ydrpiouTft8MVW6qNjfkaQphHSnvgQbpQ==
+
 primereact@^10.8.4:
   version "10.8.4"
   resolved "https://registry.npmjs.intuit.com:443/artifactory/api/npm/npm-intuit/primereact/-/primereact-10.8.4.tgz#c90938cd0575a2a21762bff4c65a5e93f24eafb3"

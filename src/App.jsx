@@ -7,7 +7,13 @@ function App() {
     return (
         <>
             <h1>Hello, World</h1>
-            <DataTable value={PROJECTS} tableStyle={{ minWidth: '50rem' }}>
+            <DataTable
+                value={PROJECTS}
+                stripedRows
+                showGridlines
+                rowHover={true}
+                tableStyle={{ minWidth: '50rem' }}
+            >
                 {COLUMNS.map((col, i) => (
                     <Column
                         key={`col-${i}`}
