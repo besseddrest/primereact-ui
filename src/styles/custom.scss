@@ -1,0 +1,15 @@
+.p-datatable-tbody {
+    tr {
+        &:hover {
+            background: #fffee2;
+        }
+    }
+
+    .p-row-odd {
+        background: #dbeaff;
+    }
+}
+
+/* classnames from old tank */
+.ui-column-title {
+}

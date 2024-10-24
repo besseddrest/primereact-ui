@@ -2,28 +2,75 @@ import { DataTable } from 'primereact/datatable'
 import './App.css'
 import './styles/custom.scss'
 import { Column } from 'primereact/column'
+import { Checkbox } from 'primereact/checkbox'
 
 function App() {
     return (
         <>
-            <h1>Hello, World</h1>
+            <h1>DataTable</h1>
             <DataTable
                 value={PROJECTS}
+                paginator
+                rows={5}
+                rowsPerPageOptions={[5, 10, 25, 50]}
                 stripedRows
                 showGridlines
                 rowHover={true}
+                // filters={['contains']}
+                // filterDisplay="row"
+                id="foo"
                 tableStyle={{ minWidth: '50rem' }}
             >
-                {COLUMNS.map((col, i) => (
-                    <Column
-                        key={`col-${i}`}
-                        field={col.field}
-                        header={col.title}
-                    ></Column>
-                ))}
+                {COLUMNS.map((col, i) => getColumn(col, i))}
             </DataTable>
         </>
     )
+}
+
+function getColumn(col, i) {
+    console.log(col.field)
+    if (col.field === 'isChecked') {
+        return (
+            <Column
+                key={`col-${i}`}
+                field={col.field}
+                header={col.title}
+                body={checkboxTemplate}
+            ></Column>
+        )
+    }
+
+    if (col.field === 'actions') {
+        return (
+            <Column
+                key={`col-${i}`}
+                field={col.field}
+                header={col.title}
+                body={actionsTemplate}
+            >
+                Link1 Link2
+            </Column>
+        )
+    }
+
+    return (
+        <Column
+            className="ui-column-title"
+            key={`col-${i}`}
+            field={col.field}
+            header={col.title}
+            sortable
+            // filter
+        ></Column>
+    )
+}
+
+const checkboxTemplate = () => {
+    return <Checkbox onChange={() => {}} checked={false}></Checkbox>
+}
+
+const actionsTemplate = () => {
+    return <>Link1 Link2</>
 }
 
 const PROJECTS = [
@@ -140,6 +187,7 @@ const COLUMNS = [
     { field: 'created', title: 'Create Date' },
     { field: 'modified', title: 'Modified Date' },
     { field: 'owner', title: 'Owner' },
+    { field: 'actions', title: '' },
 ]
 
 export default App
