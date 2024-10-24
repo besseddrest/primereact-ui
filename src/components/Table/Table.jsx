@@ -8,6 +8,7 @@ import { useEffect, useState } from 'react'
 import { FilterMatchMode } from 'primereact/api'
 import { MultiSelect } from 'primereact/multiselect'
 import { InputText } from 'primereact/inputtext'
+import { Dropdown } from 'primereact/dropdown'
 
 const COLUMNS = [
     { field: 'isChecked', title: '', filter: '' },
@@ -22,14 +23,14 @@ const COLUMNS = [
 export default function Table() {
     const [owners, setOwners] = useState([])
     const [products, setProducts] = useState([])
+    const [globalSearchValue, setGlobalSearchValue] = useState([])
     const [keywordFilters, setKeywordFilters] = useState({
-        // TODO: set default value and filter rules
         global: { value: null, matchMode: FilterMatchMode.CONTAINS },
         name: { value: null, matchMode: FilterMatchMode.CONTAINS },
-        product: { value: null, matchMode: FilterMatchMode.EQUALS },
+        product: { value: null, matchMode: FilterMatchMode.IN },
         created: { value: null, matchMode: FilterMatchMode.CONTAINS },
         modified: { value: null, matchMode: FilterMatchMode.CONTAINS },
-        owner: { value: null, matchMode: FilterMatchMode.EQUALS },
+        owner: { value: null, matchMode: FilterMatchMode.IN },
     })
 
     useEffect(() => {
@@ -38,14 +39,14 @@ export default function Table() {
 
     const ownersRowFilterTemplate = (options) => {
         return (
-            <MultiSelect
+            <Dropdown
                 value={options.values}
                 options={owners}
                 optionLabel="owner"
                 placeholder="All"
-                maxSelectedLabels={1}
-                onChange={(e) => console.log('changed')}
+                onChange={options.filterApplyCallback}
                 itemTemplate={ownersItemTemplate}
+                showClear
             />
         )
     }
@@ -56,20 +57,19 @@ export default function Table() {
 
     const productsRowFilterTemplate = (options) => {
         return (
-            <MultiSelect
+            <Dropdown
                 value={options.values}
                 options={products}
                 optionLabel="product"
                 placeholder="All Products"
-                maxSelectedLabels={1}
-                onChange={(e) => console.log('changed')}
+                onChange={options.filterApplyCallback}
                 itemTemplate={productsItemTemplate}
+                showClear
             />
         )
     }
 
     const productsItemTemplate = (option) => {
-        // TODO: multiselect for products filter list
         return <div>{option}</div>
     }
 
@@ -82,13 +82,13 @@ export default function Table() {
             stripedRows
             showGridlines
             rowHover={true}
-            globalFilterFields={['product', 'owner']}
+            globalFilterFields={['name', 'product', 'owner']}
             filters={keywordFilters}
             filterDisplay="row"
             id="foo"
             tableStyle={{ minWidth: '50rem' }}
-            header={globalTableSearch}
-            onFilter={(ev) => console.log('global filter')}
+            header={globalSearchField}
+            emptyMessage="No results found."
         >
             <Column field="isSelected" body={checkboxTemplate}></Column>
             <Column field="name" header="Name" sortable filter></Column>
@@ -126,20 +126,30 @@ export default function Table() {
         </DataTable>
     )
 
-    function globalTableSearch() {
+    function globalSearchField() {
         return (
             <div>
                 <IconField>
                     <InputIcon className="pi pi-search" />
                     <InputText
-                        value=""
-                        onChange={() => {}}
+                        value={globalSearchValue}
+                        onChange={handleGlobalSearchChange}
                         placeholder="Keyword Search"
                     />
                 </IconField>
             </div>
         )
     }
+
+    function handleGlobalSearchChange(ev) {
+        const value = ev.target.value
+        let _filters = { ...keywordFilters }
+
+        _filters['global'].value = value
+        setKeywordFilters(_filters)
+        setGlobalSearchValue(value)
+    }
+
     function setFilterLists(data) {
         const owners = []
         const products = []
