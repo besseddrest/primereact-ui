@@ -23,7 +23,8 @@ const COLUMNS = [
 export default function Table() {
     const [owners, setOwners] = useState([])
     const [products, setProducts] = useState([])
-    const [globalSearchValue, setGlobalSearchValue] = useState([])
+    const [selectedProductFilter, setSelectedProductFilter] = useState('')
+    const [globalSearchValue, setGlobalSearchValue] = useState('')
     const [keywordFilters, setKeywordFilters] = useState({
         global: { value: null, matchMode: FilterMatchMode.CONTAINS },
         name: { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -57,15 +58,21 @@ export default function Table() {
 
     const productsRowFilterTemplate = (options) => {
         return (
+            <>
             <Dropdown
-                value={options.values}
+                value={selectedProductFilter}
                 options={products}
                 optionLabel="product"
                 placeholder="All Products"
-                onChange={options.filterApplyCallback}
+                onChange={(e) =>{ 
+                    setSelectedProductFilter(e.value)
+                    options.filterApplyCallback(e.value)
+                }}
+                filter
                 itemTemplate={productsItemTemplate}
                 showClear
             />
+            </>
         )
     }
 
@@ -99,6 +106,7 @@ export default function Table() {
                 filter
                 filterField="product"
                 showFilterMenu={false}
+
                 filterElement={productsRowFilterTemplate}
             ></Column>
             <Column
@@ -163,6 +171,7 @@ export default function Table() {
                 products.push(data[i].product)
             }
         }
+
         setOwners(owners)
         setProducts(products)
     }
