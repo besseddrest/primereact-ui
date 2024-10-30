@@ -13,7 +13,7 @@ import { Dropdown } from 'primereact/dropdown'
 const COLUMNS = [
     { field: 'isChecked', title: '', filter: '' },
     { field: 'name', title: 'Name', filter: 'text' },
-    { field: 'product', title: 'Product', filter: 'list' },
+    { field: 'product', title: 'Product', filter: 'text' },
     { field: 'created', title: 'Create Date', filter: 'text' },
     { field: 'modified', title: 'Modified Date', filter: 'text' },
     { field: 'owner', title: 'Owner', filter: 'text' },
@@ -23,14 +23,14 @@ const COLUMNS = [
 export default function Table() {
     const [owners, setOwners] = useState([])
     const [products, setProducts] = useState([])
-    const [globalSearchValue, setGlobalSearchValue] = useState([])
+    const [globalSearchValue, setGlobalSearchValue] = useState('')
     const [keywordFilters, setKeywordFilters] = useState({
         global: { value: null, matchMode: FilterMatchMode.CONTAINS },
         name: { value: null, matchMode: FilterMatchMode.CONTAINS },
-        product: { value: null, matchMode: FilterMatchMode.IN },
+        product: { value: null, matchMode: FilterMatchMode.CONTAINS },
         created: { value: null, matchMode: FilterMatchMode.CONTAINS },
         modified: { value: null, matchMode: FilterMatchMode.CONTAINS },
-        owner: { value: null, matchMode: FilterMatchMode.IN },
+        owner: { value: null, matchMode: FilterMatchMode.CONTAINS },
     })
 
     useEffect(() => {
@@ -40,11 +40,12 @@ export default function Table() {
     const ownersRowFilterTemplate = (options) => {
         return (
             <Dropdown
-                value={options.values}
+                value={options.value}
                 options={owners}
                 optionLabel="owner"
                 placeholder="All"
-                onChange={options.filterApplyCallback}
+                filter
+                onChange={(e) => options.filterApplyCallback(e.value, 'owner')}
                 itemTemplate={ownersItemTemplate}
                 showClear
             />
@@ -58,11 +59,12 @@ export default function Table() {
     const productsRowFilterTemplate = (options) => {
         return (
             <Dropdown
-                value={options.values}
+                value={options.value}
                 options={products}
                 optionLabel="product"
                 placeholder="All Products"
-                onChange={options.filterApplyCallback}
+                onChange={(e) => options.filterApplyCallback(e.value, 'product')}
+                filter
                 itemTemplate={productsItemTemplate}
                 showClear
             />
@@ -99,6 +101,7 @@ export default function Table() {
                 filter
                 filterField="product"
                 showFilterMenu={false}
+                filterMatchMode='contains'
                 filterElement={productsRowFilterTemplate}
             ></Column>
             <Column
@@ -117,8 +120,9 @@ export default function Table() {
                 field="owner"
                 header="Owner"
                 sortable
-                filterField="owner"
                 filter
+                filterField="owner"
+                filterMatchMode='contains'
                 showFilterMenu={true}
                 filterElement={ownersRowFilterTemplate}
             ></Column>
@@ -163,6 +167,7 @@ export default function Table() {
                 products.push(data[i].product)
             }
         }
+
         setOwners(owners)
         setProducts(products)
     }
